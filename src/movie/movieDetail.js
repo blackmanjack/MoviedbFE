@@ -1,91 +1,150 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  CircularProgressbar,
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar";
 import moment from "moment";
+import Loader from "react-loader-spinner";
+import { useParams } from "react-router-dom";
 
-function MovieList() {
+function MovieDetail() {
   const [allData, setallData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [genre, setGenre] = useState([]);
+
+  let { id } = useParams();
+  // console.log("SLUG", id);
+  // console.log("ID", id);
 
   useEffect(() => {
+    setLoading(true);
+    // console.log("ID", id);
     axios
       .get(
-        `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=1`
+        `https://api.themoviedb.org/3/movie/${id}?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US`
       )
       .then((res) => {
-        console.log(res.data);
-        setallData(res.data.results);
+        // console.log(res.data);
+        let result = res.data.result;
+        setallData(res.data);
+        setGenre(res.data.genres);
+        setLoading(false);
       });
-  }, []);
+  }, [id]);
 
+  console.log("Film detail", allData);
   return (
     <>
-      <div className="flex flex-wrap w-10/12 justify-center mx-32 mt-4">
-        {allData.map((item, index) => {
-          return (
-            <div style={{ width: "150px", minWidth: "150px" }} className="m-2">
-              <img
-                src={
-                  `https://www.themoviedb.org/t/p/w440_and_h660_face/` +
-                  item.poster_path
-                }
-                className="cursor-pointer w-full h-auto rounded-lg shadow-lg"
-              />
-              <div className=" h-10 w-10 relative -top-4 left-3">
-                {/* <div>
-                  <CircularProgressbar value={item.vote_average * 10} />
-                </div> */}
-                {/* <CircularProgressbar
-                  value={item.vote_average * 10}
-                  text={`${item.vote_average * 10}%`}
-                  background
-                  backgroundPadding={6}
-                  styles={buildStyles({
-                    textSize: "32px",
-                    backgroundColor: "black",
-                    textColor: "#fff",
-                    pathColor: "#21d07a",
-                    trailColor: "#204529",
-                    strokeLinecap: "round",
-                  })}
-                ></CircularProgressbar> */}
-
-                <CircularProgressbarWithChildren
-                  value={item.vote_average * 10}
-                  className="bg-black rounded-full"
-                  background
-                  backgroundPadding={6}
-                  styles={buildStyles({
-                    backgroundColor: "#032541",
-                    textColor: "#fff",
-                    pathColor: "#21d07a",
-                    trailColor: "#204529",
-                    strokeLinecap: "round",
-                  })}
-                >
-                  <div className="flex text-white justify-center">
-                    <span style={{ fontSize: "12px" }} className="font-bold">
-                      {item.vote_average * 10}
-                    </span>{" "}
-                    <span style={{ fontSize: "8px" }} className="-mt-0">
-                      %
-                    </span>
-                  </div>
-                </CircularProgressbarWithChildren>
+      {loading ? (
+        <>
+          <div className="w-full flex justify-center my-32">
+            <div className="flex-col justify-center space-y-2">
+              <Loader
+                type="Bars"
+                color="#032541"
+                height={50}
+                width={50}
+                timeout={3000} //3 secs
+              ></Loader>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div
+            style={{
+              width: "100%",
+              backgroundImage: `linear-gradient(to right bottom, rgb(9, 19, 33), rgba(9, 19, 33, 0.84)), url(${
+                "https://www.themoviedb.org/t/p/w1920_and_h800_face/" +
+                allData.backdrop_path
+              })`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            }}
+            className="w-full container flex flex-row lg:h-full h-screen flex-wrap p-6"
+          >
+            <div className="container-detail items-center  flex flex-col md:flex-row flex-1 gap-10 ">
+              <div style={{ width: "300px", height: "450px" }}>
+                <img
+                  alt="poster"
+                  src={
+                    `https://www.themoviedb.org/t/p/w600_and_h900_face/` +
+                    allData.poster_path
+                  }
+                  className="h-auto rounded-lg shadow-lg"
+                />
               </div>
-              <div className="p-2 -mt-4">
-                <p className="font-bold">{item.title}</p>
-                <p>{moment(item.release_date).format("ll")}</p>
+
+              <div className="flex flex-col flex-1 gap-2 text-white">
+                <div style={{ fontSize: "32px" }} className="text-white">
+                  <span className="font-bold ">{allData.title}</span>
+                  <span className="opacity-80">
+                    {" "}
+                    ({moment(allData.release_date).format("YYYY")})
+                  </span>
+                </div>
+                <div>
+                  <span>{moment(allData.release_date).format("ll")}</span>
+                  <span>({allData.original_language}) - </span>
+                  {genre.map((item) => {
+                    return (
+                      <>
+                        <span>{item.name}</span>;
+                      </>
+                    );
+                  })}
+                </div>
+
+                <div className="flex gap-3 items-center">
+                  <div className="h-16 w-16 ">
+                    <CircularProgressbarWithChildren
+                      value={allData.vote_average * 10}
+                      className="bg-black rounded-full"
+                      background
+                      backgroundPadding={6}
+                      styles={buildStyles({
+                        backgroundColor: "#032541",
+                        textColor: "#fff",
+                        pathColor: "#21d07a",
+                        trailColor: "#204529",
+                        strokeLinecap: "round",
+                      })}
+                    >
+                      <div className="flex text-white justify-center">
+                        <span
+                          style={{ fontSize: "18px" }}
+                          className="font-bold"
+                        >
+                          {allData.vote_average * 10}
+                        </span>{" "}
+                        <span style={{ fontSize: "10px" }} className="-mt-0">
+                          %
+                        </span>
+                      </div>
+                    </CircularProgressbarWithChildren>
+                  </div>
+
+                  <span className="justify-center">
+                    User
+                    <br />
+                    Score
+                  </span>
+                </div>
+
+                <i className="text-gray-500 font-medium">{allData.tagline}</i>
+                <div style={{ fontSize: "20px" }} className="font-bold">
+                  Overview
+                </div>
+
+                <div>{allData.overview}</div>
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
 
-export default MovieList;
+export default MovieDetail;

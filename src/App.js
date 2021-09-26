@@ -1,13 +1,8 @@
-import logo from "./logo.svg";
-import MovieList from "./movie/movieCard";
 import "./App.css";
+import Routes from "./Routes/index";
 
 function App() {
-  return (
-    <div className="App">
-      <MovieList />
-    </div>
-  );
+  return <Routes />;
 }
 
 export default App;
