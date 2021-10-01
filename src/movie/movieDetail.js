@@ -54,15 +54,14 @@ function MovieDetail() {
         <>
           <div
             style={{
-              width: "100%",
               backgroundImage: `linear-gradient(to right bottom, rgb(9, 19, 33), rgba(9, 19, 33, 0.84)), url(${
                 "https://www.themoviedb.org/t/p/w1920_and_h800_face/" +
                 allData.backdrop_path
               })`,
               backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
+              backgroundRepeat: "initial",
             }}
-            className="w-full container flex flex-row lg:h-full h-screen flex-wrap p-6"
+            className="bg-center w-screen container flex flex-row sm:w-screen sm:h-full md:w-screen md:h-screen lg:h-screen h-full justify-center flex-wrap p-6"
           >
             <div className="container-detail items-center  flex flex-col md:flex-row flex-1 gap-10 ">
               <div style={{ width: "300px", height: "450px" }}>
@@ -87,13 +86,25 @@ function MovieDetail() {
                 <div>
                   <span>{moment(allData.release_date).format("ll")}</span>
                   <span>({allData.original_language}) - </span>
-                  {genre.map((item) => {
+                  {genre.map((item, index) => {
                     return (
                       <>
-                        <span>{item.name}</span>;
+                        {index == genre.length - 1 ? (
+                          <>
+                            <span>{item.name} </span>
+                          </>
+                        ) : (
+                          <>
+                            <span>{item.name}, </span>
+                          </>
+                        )}
                       </>
                     );
                   })}
+                  <span>
+                    {" "}
+                    - {parseInt(allData.runtime / 60)}h {allData.runtime % 60}m
+                  </span>
                 </div>
 
                 <div className="flex gap-3 items-center">
