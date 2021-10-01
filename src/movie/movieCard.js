@@ -12,27 +12,55 @@ function MovieList() {
   const [allData, setallData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [errMsg, setErrorMsg] = useState("");
+
+  const loadMore = () => {
+    setLoading(true);
+    setPage((page) => page + 1);
+  };
+
+  const handleScroll = (e) => {
+    const target = e.target;
+    if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+      //do
+      loadMore();
+      console.log(page);
+    }
+    // const bottom =
+    //   // window.innerHeight + document.documentElement.scrollTop ===
+    //   // document.scrollingElement.scrollHeight;
+    //   e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    // if (bottom) {
+    //   loadMore();
+    //   console.log("BAWAH");
+    // }
+  };
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(
-        `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}`
-      )
-      .then((res) => {
-        console.log(res.data);
-        setallData(res.data.results);
+    const loadData = async () => {
+      try {
+        const response = await axios.get(
+          `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}`
+        );
+
+        setallData((data) => [...data, ...response.data.results]);
+        setErrorMsg("");
+      } catch (error) {
+        setErrorMsg("Error while loading data. Try again later.");
+      } finally {
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    loadData();
+  }, [page]);
 
   return (
     <>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center" onScroll={handleScroll}>
         {window.innerHeight + document.documentElement.scrollTop ===
           document.scrollingElement.scrollHeight && loading ? (
           <>
-            {/* {setPage(page + 1)} */}
             <Loader
               type="Bars"
               color="#032541"
@@ -43,7 +71,10 @@ function MovieList() {
           </>
         ) : (
           <>
-            <div className="flex flex-wrap w-10/12 justify-center mx-32 mt-4">
+            <div
+              className="flex flex-wrap w-10/12 justify-center mx-32 mt-4"
+              onScroll={() => handleScroll}
+            >
               {allData.map((item, index) => {
                 return (
                   <div
@@ -95,23 +126,7 @@ function MovieList() {
                   </div>
                 );
               })}
-              <button
-                onClick={() =>
-                  axios
-                    .get(
-                      `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${
-                        page + 1
-                      }`
-                    )
-                    .then((res) => {
-                      console.log(res.data);
-                      setallData(res.data.results);
-                      setLoading(false);
-                    })
-                }
-              >
-                Load More
-              </button>
+              {/* <button onClick={loadMore}>Load More</button> */}
             </div>
           </>
         )}
