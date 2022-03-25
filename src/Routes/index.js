@@ -11,7 +11,7 @@ const SwitchRouter = () => {
           <MovieList />
         </Route>
 
-        <Route path="/detail/:id">
+        <Route path="/detail/:id-:title">
           <MovieDetail />
         </Route>
       </Router>

@@ -26,7 +26,7 @@ function MovieDetail() {
       )
       .then((res) => {
         // console.log(res.data);
-        let result = res.data.result;
+
         setallData(res.data);
         setGenre(res.data.genres);
         setLoading(false);
@@ -89,7 +89,7 @@ function MovieDetail() {
                   {genre.map((item, index) => {
                     return (
                       <>
-                        {index == genre.length - 1 ? (
+                        {index === genre.length - 1 ? (
                           <>
                             <span>{item.name} </span>
                           </>

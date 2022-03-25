@@ -13,47 +13,117 @@ function MovieList() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [errMsg, setErrorMsg] = useState("");
+  const [sortt, setSortt] = useState(false);
+  const [sortType, setSortType] = useState("asc");
+  const [load, setLoad] = useState(false);
 
-  const loadMore = () => {
+  useEffect(() => {}, []);
+
+  const loadMore = async () => {
+    setLoad(true);
     setLoading(true);
     setPage((page) => page + 1);
+    if (sortt === true) {
+      setSortt(true);
+      setPage((page) => page + 1);
+      setallData((data) => [...data]);
+    }
+  };
+
+  const sort = () => {
+    setSortt(true);
+    setLoading(true);
+    setSortType("asc");
   };
 
   const handleScroll = (e) => {
-    const target = e.target;
-    if (target.scrollHeight - target.scrollTop === target.clientHeight) {
-      //do
-      loadMore();
-      console.log(page);
-    }
-    // const bottom =
-    //   // window.innerHeight + document.documentElement.scrollTop ===
-    //   // document.scrollingElement.scrollHeight;
-    //   e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-    // if (bottom) {
+    // const target = e.target;
+    // console.log("scroll", target);
+    // if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+    //   //do
     //   loadMore();
-    //   console.log("BAWAH");
+    //   console.log(page);
     // }
+    // // const bottom =
+    // //   // window.innerHeight + document.documentElement.scrollTop ===
+    // //   // document.scrollingElement.scrollHeight;
+    // //   e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    // // if (bottom) {
+    // //   loadMore();
+    // //   console.log("BAWAH");
+    // // }
   };
 
   useEffect(() => {
+    setLoading(true);
     const loadData = async () => {
-      try {
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}`
-        );
+      const list = allData;
 
-        setallData((data) => [...data, ...response.data.results]);
-        setErrorMsg("");
+      if (sortt === true) {
+        const sortList = () => {
+          if (sortType === "asc") {
+            return list.sort((a, b) => {
+              return parseFloat(a.vote_average) - parseFloat(b.vote_average);
+            });
+          } else {
+            return list.sort((a, b) => {
+              return parseFloat(b.vote_average) - parseFloat(a.vote_average);
+            });
+          }
+        };
+        sortList();
+      }
+
+      try {
+        if (sortt === false) {
+          const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}`
+          );
+
+          console.log(response.data);
+
+          setallData((data) => [...data, ...response.data.results]);
+          setErrorMsg("");
+        } else if (load === true && sortt === true) {
+          const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}`
+          );
+
+          console.log(response.data);
+
+          setallData((data) => [...data, ...response.data.results]);
+          setErrorMsg("");
+        }
+        // else {
+        //     const response = await axios.get(
+        //       `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}
+        //         )}`
+        //     );
+        //     setallData((data) => [...data, ...response.data.results]);
+        //     setErrorMsg("");
+        //   }
+        // const response = await axios.get(
+        //   `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}
+        //         )}`
+        // );
+        // setallData((data) => [...data, ...response.data.results]);
+        // setErrorMsg("");
       } catch (error) {
         setErrorMsg("Error while loading data. Try again later.");
       } finally {
         setLoading(false);
       }
+      // loadData();
     };
-
+    // if (sortt === false) {
+    //   loadData();
+    // } else {
+    //   loadData();
+    // }
     loadData();
-  }, [page]);
+  }, [page, sortt, load]);
+
+  console.log(allData);
 
   return (
     <>
@@ -71,6 +141,7 @@ function MovieList() {
           </>
         ) : (
           <>
+            <button onClick={() => sort()}>Sort rating</button>
             <div
               className="flex flex-wrap w-10/12 justify-center mx-32 mt-4"
               onScroll={() => handleScroll}
@@ -81,7 +152,17 @@ function MovieList() {
                     style={{ width: "150px", minWidth: "150px" }}
                     className="m-2"
                   >
-                    <Link to={`/detail/` + item.id}>
+                    <Link
+                      to={
+                        `/detail/` +
+                        item.id +
+                        `-` +
+                        item.title
+                          .replace(/\s/g, "-")
+                          .replace(/[%:.*+?^${}()|[\]\\]/g, "")
+                          .toLowerCase()
+                      }
+                    >
                       <img
                         alt="poster"
                         src={
@@ -126,10 +207,10 @@ function MovieList() {
                   </div>
                 );
               })}
-              {/* <button onClick={loadMore}>Load More</button> */}
             </div>
           </>
         )}
+        <button onClick={loadMore}>Load More</button>
       </div>
     </>
   );
