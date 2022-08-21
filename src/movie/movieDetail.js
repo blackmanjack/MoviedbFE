@@ -33,12 +33,12 @@ function MovieDetail() {
       });
   }, [id]);
 
-  console.log("Film detail", allData);
+  // console.log("Film detail", allData);
   return (
     <>
       {loading ? (
         <>
-          <div className="w-full flex justify-center my-32">
+          <div className="center-screen ">
             <div className="flex-col justify-center space-y-2">
               <Loader
                 type="Bars"
@@ -61,9 +61,9 @@ function MovieDetail() {
               backgroundSize: "cover",
               backgroundRepeat: "initial",
             }}
-            className="bg-center w-screen container flex flex-row sm:w-screen sm:h-full md:w-screen md:h-screen lg:h-screen h-full justify-center flex-wrap p-6"
+            className="bg-center w-screen container flex flex-row sm:w-screen sm:h-full md:w-screen md:h-screen lg:h-screen h-full justify-center flex-wrap p-16"
           >
-            <div className="container-detail items-center  flex flex-col md:flex-row flex-1 gap-10 ">
+            <div className="mt-10 container-detail items-center  flex flex-col md:flex-row flex-1 gap-10 ">
               <div style={{ width: "300px", height: "450px" }}>
                 <img
                   alt="poster"
@@ -127,7 +127,7 @@ function MovieDetail() {
                           style={{ fontSize: "18px" }}
                           className="font-bold"
                         >
-                          {allData.vote_average * 10}
+                          {parseInt(allData.vote_average * 10)}
                         </span>{" "}
                         <span style={{ fontSize: "10px" }} className="-mt-0">
                           %

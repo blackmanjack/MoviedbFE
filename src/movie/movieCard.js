@@ -80,7 +80,7 @@ function MovieList() {
             `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}`
           );
 
-          console.log(response.data);
+          // console.log(response.data);
 
           setallData((data) => [...data, ...response.data.results]);
           setErrorMsg("");
@@ -89,7 +89,7 @@ function MovieList() {
             `https://api.themoviedb.org/3/movie/now_playing?api_key=29cc88a702bd22ca0b5c97a5f5124dd1&language=en-US&page=${page}`
           );
 
-          console.log(response.data);
+          // console.log(response.data);
 
           setallData((data) => [...data, ...response.data.results]);
           setErrorMsg("");
@@ -123,11 +123,14 @@ function MovieList() {
     loadData();
   }, [page, sortt, load]);
 
-  console.log(allData);
+  // console.log(allData);
 
   return (
     <>
-      <div className="flex flex-col items-center" onScroll={handleScroll}>
+      <div
+        className="center-screen flex flex-col items-center mt-20"
+        onScroll={handleScroll}
+      >
         {window.innerHeight + document.documentElement.scrollTop ===
           document.scrollingElement.scrollHeight && loading ? (
           <>
@@ -141,7 +144,7 @@ function MovieList() {
           </>
         ) : (
           <>
-            <button onClick={() => sort()}>Sort rating</button>
+            {/* <button onClick={() => sort()}>Sort rating</button> */}
             <div
               className="flex flex-wrap w-10/12 justify-center mx-32 mt-4"
               onScroll={() => handleScroll}
@@ -150,7 +153,7 @@ function MovieList() {
                 return (
                   <div
                     style={{ width: "150px", minWidth: "150px" }}
-                    className="m-2"
+                    className="card-album m-2"
                   >
                     <Link
                       to={
@@ -169,48 +172,57 @@ function MovieList() {
                           `https://www.themoviedb.org/t/p/w440_and_h660_face/` +
                           item.poster_path
                         }
-                        className="cursor-pointer w-full h-auto rounded-lg shadow-lg"
+                        className=" cursor-pointer w-full h-auto rounded-lg shadow-lg"
                       />
-                    </Link>
 
-                    <div className=" h-10 w-10 relative -top-4 left-3">
-                      <CircularProgressbarWithChildren
-                        value={item.vote_average * 10}
-                        className="bg-black rounded-full"
-                        background
-                        backgroundPadding={6}
-                        styles={buildStyles({
-                          backgroundColor: "#032541",
-                          textColor: "#fff",
-                          pathColor: "#21d07a",
-                          trailColor: "#204529",
-                          strokeLinecap: "round",
-                        })}
-                      >
-                        <div className="flex text-white justify-center">
-                          <span
-                            style={{ fontSize: "12px" }}
-                            className="font-bold"
-                          >
-                            {item.vote_average * 10}
-                          </span>{" "}
-                          <span style={{ fontSize: "8px" }} className="-mt-0">
-                            %
-                          </span>
-                        </div>
-                      </CircularProgressbarWithChildren>
-                    </div>
-                    <div className="p-2 -mt-4">
-                      <p className="font-bold">{item.title}</p>
-                      <p>{moment(item.release_date).format("ll")}</p>
-                    </div>
+                      <div className=" h-10 w-10 relative -top-4 left-3">
+                        <CircularProgressbarWithChildren
+                          value={item.vote_average * 10}
+                          className="bg-black rounded-full"
+                          background
+                          backgroundPadding={6}
+                          styles={buildStyles({
+                            backgroundColor: "#032541",
+                            textColor: "#fff",
+                            pathColor: "#21d07a",
+                            trailColor: "#204529",
+                            strokeLinecap: "round",
+                          })}
+                        >
+                          <div className="flex text-white justify-center">
+                            <span
+                              style={{ fontSize: "12px" }}
+                              className="font-bold"
+                            >
+                              {item.vote_average * 10}
+                            </span>{" "}
+                            <span style={{ fontSize: "8px" }} className="-mt-0">
+                              %
+                            </span>
+                          </div>
+                        </CircularProgressbarWithChildren>
+                      </div>
+                      <div className="p-2 -mt-4">
+                        <p className="font-bold">{item.title}</p>
+                        <p>{moment(item.release_date).format("ll")}</p>
+                      </div>
+                    </Link>
                   </div>
                 );
               })}
             </div>
           </>
         )}
-        <button onClick={loadMore}>Load More</button>
+        {/* <button onClick={loadMore} class="btn">
+          <svg width="180px" height="60px" viewBox="0 0 180 60" class="border">
+            <polyline points="179,1 179,59 1,59 1,1 179,1" class="bg-line" />
+            <polyline points="179,1 179,59 1,59 1,1 179,1" class="hl-line" />
+          </svg>
+          <span>HOVER ME</span>
+        </button> */}
+        <button className="btn" onClick={loadMore}>
+          Load More Movies
+        </button>
       </div>
     </>
   );
