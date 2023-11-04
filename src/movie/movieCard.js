@@ -194,7 +194,7 @@ function MovieList() {
                               style={{ fontSize: "12px" }}
                               className="font-bold"
                             >
-                              {item.vote_average * 10}
+                              {parseInt(item.vote_average * 10)}
                             </span>{" "}
                             <span style={{ fontSize: "8px" }} className="-mt-0">
                               %
